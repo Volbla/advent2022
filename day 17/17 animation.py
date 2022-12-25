@@ -157,6 +157,7 @@ def rendering(window:SurfaceType, backgrounds:list[ScaledSurface], sprite:Scaled
 		pg.quit()
 		return False
 
+	# When the example data starts to repeat
 	while i == 1415 and not pg.key.get_pressed()[pg.K_SPACE]:
 		pg.event.wait()
 
@@ -174,8 +175,8 @@ def rendering(window:SurfaceType, backgrounds:list[ScaledSurface], sprite:Scaled
 	y1, y2 = y_surface_matches(y)
 
 	window.blits((
-		(sprite.big_coords(x1, y1)),
-		(sprite.big_coords(x2, y2)),
+		sprite.big_coords(x1, y1),
+		sprite.big_coords(x2, y2),
 	))
 
 	pg.display.update()
@@ -260,6 +261,7 @@ def clamp(x, low, high):
 def make_gameparts(title="Pygame window", window_size=(800,600)) -> SurfaceType:
 	pg.init()
 	pg.display.set_caption(title)
+	# Passing None as the argument blocks all events.
 	pg.event.set_blocked(None)
 	pg.event.set_allowed(pg.QUIT)
 	pg.event.set_allowed(pg.KEYDOWN)
