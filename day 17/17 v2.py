@@ -1,8 +1,6 @@
 import numpy as np
 from itertools import cycle
 
-from typing import Iterable
-
 with open("17.txt", "r", newline="\n") as f:
 	jets = [np.array([1,0]) if char == ">" else np.array([-1,0]) for char in f.read().strip()]
 # Site example
