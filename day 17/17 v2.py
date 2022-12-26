@@ -8,7 +8,7 @@ with open("17.txt", "r", newline="\n") as f:
 
 shapes = (
 	np.array([[0,0], [1,0], [2,0], [3,0]]),
-	np.array([[1,0], [0,1], [1,1], [2,1], [1,2]]),
+	np.array([[0,1], [1,0], [1,1], [1,2], [2,1]]),
 	np.array([[0,0], [1,0], [2,0], [2,1], [2,2]]),
 	np.array([[0,0], [0,1], [0,2], [0,3]]),
 	np.array([[0,0], [1,0], [0,1], [1,1]])
@@ -31,20 +31,23 @@ def falling_rocks(rock_count:int):
 	down = np.array([0,-1])
 
 	for i in range(rock_count):
-		if i % 10_000 == 0:
-			print(i)
+		if i % 1000 == 0:
+			# print(i)
+			tower = {n for n in tower if n[1] > tallest - 100}
 		block = next(shape).copy()
-		block += [2, tallest + 4]
+		block += [2, tallest + 1]
+
+		for _ in range(3):
+			push = next(jet)
+			if (push[0] == -1 and block[0,0] != 0) or (push[0] == 1 and block[-1,0] != 6):
+				block += push
 
 		while True:
-			movement = block + next(jet)
-			is_blocked = (
-				min(movement[:,0]) == -1 or
-				max(movement[:,0]) == 7 or
-				set(map(tuple, movement)) & tower
-			)
-			if not is_blocked:
-				block = movement
+			push = next(jet)
+			if (push[0] == -1 and block[0,0] != 0) or (push[0] == 1 and block[-1,0] != 6):
+				movement = block + push
+				if not set(map(tuple, movement)) & tower:
+					block = movement
 
 			movement = block + down
 			if not set(map(tuple, movement)) & tower:
