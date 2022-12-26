@@ -11,20 +11,21 @@ def compare(a:int|list, b:int|list) -> None|bool:
 	"""Returning None means the current comparison is inadequate
 	and the search for order must go deeper."""
 
-	are_ints = (type(a) is int, type(b) is int)
+	aint = type(a) is int
+	bint = type(b) is int
 
-	if sum(are_ints) == 2:
+	if aint and bint:
 		if a == b:
 			return None
 		else: return a < b
 
-	elif sum(are_ints) == 1:
-		if are_ints[0] == True:
+	elif aint or bint:
+		if aint:
 			return compare([a], b)
 		else:
 			return compare(a, [b])
 
-	elif sum(are_ints) == 0:
+	else:
 		for a2, b2 in zip(a, b):
 			if (response := compare(a2, b2)) is not None:
 				return response
