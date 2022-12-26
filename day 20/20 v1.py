@@ -26,7 +26,7 @@ def decrypt(data):
 	l = len(data)
 	diagonal = np.eye(l, dtype=int) * data
 
-	for i in range(10 * l):
+	for i in range(l):
 		if i % 100 == 0 and i != 0:
 			print(i)
 
