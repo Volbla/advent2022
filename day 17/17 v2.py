@@ -22,7 +22,7 @@ def main():
 	min_man = len(jets) * 5
 	pattern_search(min_man * 150)
 
-def falling_rocks(rock_count:int) -> int:
+def falling_rocks(rock_count:int):
 	jet = cycle(jets)
 	shape = cycle(shapes)
 	tower = set(((0,0), (1,0), (2,0), (3,0), (4,0), (5,0), (6,0)))
@@ -66,7 +66,7 @@ def pattern_search(rock_count:int):
 	try:
 		changes = np.load("fromdata.npy")
 	except FileNotFoundError:
-		changes = []
+		changes = np.array([])
 
 	if len(changes) < rock_count:
 		changes = np.array(falling_rocks(rock_count))
