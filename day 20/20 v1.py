@@ -1,6 +1,5 @@
 import numpy as np
 from numpy import array
-from itertools import product
 
 with open("20.txt", "r", newline="\n") as f:
 	encrypted = [int(x) for x in f.readlines()]
