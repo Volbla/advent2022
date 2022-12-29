@@ -2,7 +2,8 @@ import numpy as np
 from itertools import product
 from math import inf
 
-site_example = """2,2,2
+site_example = """\
+2,2,2
 1,2,2
 3,2,2
 2,1,2
