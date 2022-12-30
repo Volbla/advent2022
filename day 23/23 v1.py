@@ -1,6 +1,5 @@
 import numpy as np
 from numpy import array
-new = np.newaxis
 from itertools import count
 
 from nptyping import NDArray
