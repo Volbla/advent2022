@@ -31,10 +31,15 @@ def main():
 	directions = array(["^","v","<",">"])
 	blizzards = directions[:,None,None] == characters[None, 1:-1, 1:-1]
 
-	minutes = open_path(blizzards)
+	# 1
+	minutes = time_to_navigate(blizzards, 1)
 	print(minutes)
 
-def open_path(blizzards_start:NDArray[Any, Bool]):
+	# 2
+	minutes = time_to_navigate(blizzards, 3)
+	print(minutes)
+
+def time_to_navigate(blizzards_start:NDArray[Any, Bool], roundtrips:int) -> int:
 	blizzards = blizzards_start.copy()
 	size_x, size_y = blizzards.shape[1:]
 	movement = (-1, 1, -1, 1)
@@ -45,7 +50,9 @@ def open_path(blizzards_start:NDArray[Any, Bool]):
 	# Include a margin so the positions don't wrap around the edges like the blizzards do.
 	walkable = np.zeros((4, size_x + 2, size_y + 2), dtype=bool)
 
-	finale = (size_x - 1, size_y - 1)
+	trips = 0
+	start = (0, 0)
+	goal = (size_x - 1, size_y - 1)
 
 	for minute in count(1):
 		walkable.fill(False)
@@ -56,9 +63,9 @@ def open_path(blizzards_start:NDArray[Any, Bool]):
 			walkable[i] = np.roll(walkable[i], movement[i], axis=axes[i])
 		has_blizzard = np.any(blizzards, axis=0)
 
-		# First time entering the valley
+		# When entering the valley
 		if not np.any(positions):
-			positions[0,0] = True
+			positions[start] = True
 
 		positions = (
 			(positions |
@@ -67,10 +74,18 @@ def open_path(blizzards_start:NDArray[Any, Bool]):
 		)
 
 		# print(minute, np.count_nonzero(positions))
-		if positions[finale]:
-			break
+		if positions[goal]:
+			trips += 1
+			if trips == roundtrips:
+				break
 
-	return minute + 1
+			# Account for blizzard movement when exiting the valley
+			for i in range(4):
+				blizzards[i] = np.roll(blizzards[i], movement[i], axis=axes[i])
+			positions.fill(False)
+			start, goal = goal, start
+
+	return minute + roundtrips
 
 if __name__ == "__main__":
 	print()
