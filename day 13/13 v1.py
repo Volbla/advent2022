@@ -7,7 +7,7 @@ signalpairs = (tuple(map(eval, pair.splitlines())) for pair in inptext.split("\n
 # for 2
 signals = (eval(line) for line in inptext.splitlines() if line)
 
-def compare(a:int|list, b:int|list) -> None|bool:
+def compare(a:int|list, b:int|list) -> bool|None:
 	"""Returning None means the current comparison is inadequate
 	and the search for order must go deeper."""
 
@@ -35,8 +35,8 @@ def compare(a:int|list, b:int|list) -> None|bool:
 		else: return la < lb
 
 # 1
-correct = [compare(*pair) for pair in signalpairs]
-print(sum(flatnonzero(correct) + 1))
+in_correct_order = [compare(*pair) for pair in signalpairs]
+print(sum(flatnonzero(in_correct_order) + 1))
 
 # 2
 sorted_signals = [[[2]], [[6]]]
@@ -46,8 +46,8 @@ for s in signals:
 		if compare(s, ss):
 			sorted_signals.insert(i, s)
 			break
-# Don't even need to append unsorted signals to the end
-# since that doesn't change the indices of [[2]] and [[6]].
+# There's no need to append unsorted signals to the end
+# since that doesn't affect the indices of [[2]] and [[6]].
 
 divider1 = sorted_signals.index([[2]]) + 1
 divider2 = sorted_signals.index([[6]]) + 1
