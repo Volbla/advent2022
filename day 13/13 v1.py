@@ -11,8 +11,8 @@ def compare(a:int|list, b:int|list) -> bool|None:
 	"""Returning None means the current comparison is inadequate
 	and the search for order must go deeper."""
 
-	aint = type(a) is int
-	bint = type(b) is int
+	aint = isinstance(a, int)
+	bint = isinstance(b, int)
 
 	if aint and bint:
 		if a == b:
