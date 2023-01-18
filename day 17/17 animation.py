@@ -6,7 +6,7 @@ Press escape to close window.
 
 import numpy as np
 import pygame as pg
-from itertools import cycle, count, repeat, chain
+from itertools import cycle, count
 from math import sqrt
 
 from typing import Sequence
@@ -108,7 +108,7 @@ def main():
 	draw_pixels(backgrounds[0], tower, (0,0,0), (255,255,255))
 	rendering(window, backgrounds, sprite, [[0,0]], 5)
 
-	block = next(shape).copy()
+	block:PixelArray = next(shape).copy()
 	draw_pixels(sprite, block, [next(hue)])
 	block += [2, max(tower[:,1]) + 4]
 

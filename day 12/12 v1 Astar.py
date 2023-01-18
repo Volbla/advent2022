@@ -1,7 +1,6 @@
 import numpy as np
 from math import inf
 from PIL import Image
-from itertools import product
 
 # ///// TYPING SHIT /////
 

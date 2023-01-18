@@ -3,7 +3,7 @@ from numpy import array
 from itertools import count
 
 from nptyping import NDArray
-from typing import Iterator
+from typing import Iterable
 
 with open("23.txt", "r", newline="\n") as f:
 	inptext = f.read().splitlines()
@@ -51,7 +51,7 @@ def main():
 	print(i)
 
 
-def spread_out(start_coords:NDArray, iterator:Iterator) -> tuple[int,NDArray]:
+def spread_out(start_coords:NDArray, iterator:Iterable) -> tuple[int,NDArray]:
 	coords = start_coords.copy()
 
 	all_neighbors = array([[-1,-1], [0,-1], [1,-1], [1,0], [1,1], [0,1], [-1,1], [-1,0]])

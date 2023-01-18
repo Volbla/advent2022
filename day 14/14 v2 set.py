@@ -1,6 +1,6 @@
 import numpy as np
 from PIL import Image
-from itertools import count, pairwise
+from itertools import pairwise
 
 with open("14.txt", "r", newline="\n") as f:
 	inptext:list[str] = f.read().splitlines()

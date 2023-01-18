@@ -1,6 +1,5 @@
 import numpy as np
 from PIL import Image
-from itertools import count
 
 with open("14.txt", "r", newline="\n") as f:
 	inptext:list[str] = f.read().splitlines()

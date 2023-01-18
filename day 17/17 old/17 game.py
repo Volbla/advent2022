@@ -1,6 +1,6 @@
 import numpy as np
 import pygame as pg
-from itertools import cycle, count
+from itertools import cycle
 from math import sqrt
 
 from typing import Iterable, overload

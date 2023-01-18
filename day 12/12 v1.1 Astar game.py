@@ -2,8 +2,6 @@ import numpy as np
 import pygame as pg
 from math import inf
 from PIL import Image
-from itertools import product
-from time import sleep
 from collections import deque
 
 # ///// TYPING SHIT /////
