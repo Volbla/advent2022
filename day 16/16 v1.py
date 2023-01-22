@@ -168,7 +168,7 @@ def bread_search(start:str, goal:str) -> int:
 	gScore[start] = 0
 
 	while openSet:
-		current = sorted(list(openSet), key=lambda x: gScore[x])[0]
+		current = min(openSet, key=lambda x: gScore[x])
 
 		openSet.remove(current)
 		for neighbor in connections[current]:
