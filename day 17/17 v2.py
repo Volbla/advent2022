@@ -103,16 +103,16 @@ def pattern_search(rock_count:int):
 		n = rock_count // size
 		test = changes[-n * size:].reshape((n, size))
 		matching = np.all(test == test[-1], axis=1)
-		last_nonmatch = np.flatnonzero(matching == False)[-1]
+		last_nonmatch = np.flatnonzero(~matching)[-1]
 		matching_count = len(matching) - last_nonmatch - 1
 		start = rock_count % size + last_nonmatch * size + 1
 
 		if matching_count > 2:
-			print(
-				f"{size = }",
-				f"{start = }",
-				f"{matching_count = }",
-				sep="\n", end="\n\n")
+			# print(
+			# 	f"{size = }",
+			# 	f"{start = }",
+			# 	f"{matching_count = }",
+			# 	sep="\n", end="\n\n")
 			break
 
 	first_bit = 10**12 % size
@@ -123,12 +123,12 @@ def pattern_search(rock_count:int):
 	begining_height = int(sum(changes[:first_bit]))
 	repeating_height = int(sum(changes[first_bit:first_bit + size]))
 	repeat_count = (10**12 - first_bit) // size
-	print(
-		f"{first_bit = }",
-		f"{begining_height = }",
-		f"{repeating_height = }",
-		f"{repeat_count = }",
-		sep="\n", end="\n\n")
+	# print(
+	# 	f"{first_bit = }",
+	# 	f"{begining_height = }",
+	# 	f"{repeating_height = }",
+	# 	f"{repeat_count = }",
+	# 	sep="\n", end="\n\n")
 
 	total_height = begining_height + repeating_height * repeat_count
 	print(total_height)
