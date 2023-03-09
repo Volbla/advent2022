@@ -93,9 +93,10 @@ def pattern_search(rock_count:int):
 
 	for size in range(2, rock_count // 2):
 		# Check if the last two subsequent sequences match.
-		prel_top = -size + 64 if -size + 64 < 0 else rock_count
+		if (top := -size + 64) >= 0:
+			top = rock_count
 		if not (
-				all(changes[-size : prel_top] == changes[-2 * size : prel_top - size]) and
+				all(changes[-size : top] == changes[-2 * size : top - size]) and
 				all(changes[-size: ] == changes[-2 * size : -size])):
 			continue
 
