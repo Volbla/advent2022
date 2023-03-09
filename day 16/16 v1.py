@@ -46,6 +46,7 @@ def main():
 	# 1
 	path_lengths = complex_distances(30)
 	print(find_best_single_path(path_lengths))
+	return
 
 	# 2 This took me almost 4 hours to compute.
 	path_lengths = complex_distances(26, keep_short_paths=True)
@@ -91,6 +92,7 @@ def find_best_double_path(paths:dict) -> int:
 
 def pressure_from_best_order(path_lengths:dict, nodes:frozenset, time_limit:int) -> int:
 	most_pressure = 0
+
 	for first in nodes:
 		from_source = source_dist[first]
 		if not path_lengths[nodes] + from_source < time_limit:
@@ -110,6 +112,7 @@ def pressure_from_best_order(path_lengths:dict, nodes:frozenset, time_limit:int)
 				for valve, delay in zip(order, delays)
 			])
 			most_pressure = max(most_pressure, released_pressure)
+
 	return most_pressure
 
 def complex_distances(time_limit:int, keep_short_paths:bool=False) -> dict[frozenset,int]:
@@ -168,7 +171,7 @@ def bread_search(start:str, goal:str) -> int:
 	gScore[start] = 0
 
 	while openSet:
-		current = min(openSet, key=lambda x: gScore[x])
+		current = min(openSet, key=gScore.get)
 
 		openSet.remove(current)
 		for neighbor in connections[current]:
