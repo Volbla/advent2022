@@ -1,10 +1,9 @@
 import numpy as np
 import pygame as pg
 from math import inf
-from PIL import Image
 from collections import deque
 
-# ///// TYPING SHIT /////
+# /// TYPING SHIT ///
 
 from typing import Callable, Sequence, overload, Any
 from nptyping import NDArray, Int, Bool
@@ -14,7 +13,7 @@ from nptyping import NDArray, Int, Bool
 onecoord = tuple[int,...] | NDArray[Any, Int]
 Indices = tuple[onecoord, onecoord]
 
-# Compatible with regular iteration over individual coordinates.
+# Compatible with regular iteration over individual points.
 Point = tuple[int, int]
 Coordinates = Sequence[Point]
 
@@ -25,7 +24,7 @@ def transpose(tuptup:Indices) -> Coordinates: ...
 @overload
 def transpose(tuptup:Coordinates) -> Indices: ...
 
-# ///// END TYPING SHIT /////
+# /// END TYPING SHIT ///
 
 def transpose(tuptup):
 	# Transforms between the two coordinate types.
@@ -35,10 +34,12 @@ SCALE = 8
 
 with open("12.txt", "r", newline="\n", encoding="ascii") as f:
 	heightmap = np.array([[ord(c) for c in s] for s in f.read().splitlines()])
+
 start:Point = transpose(np.nonzero(heightmap == ord("S")))[0]
 end:Point = transpose(np.nonzero(heightmap == ord("E")))[0]
 heightmap[start] = ord("a")
 heightmap[end] = ord("z")
+
 
 def main():
 	def lower_estimate(p:Point) -> int:
@@ -48,20 +49,21 @@ def main():
 	y, x = heightmap.shape
 
 	window = make_gameparts("A* animation", (SCALE * x, SCALE * y))
-	img = pg.image.load("C:/Users/Daniel/Desktop/coding/map_small.png")
-	big_img = pg.transform.scale_by(img, SCALE)
-	window.blit(big_img, (0,0))
+	background = pg.image.load("map_small.png")
+	big_background = pg.transform.scale_by(background, SCALE)
+	window.blit(big_background, (0,0))
 	pg.display.update()
 
-	pathdrawing = pg.Surface((x, y), flags=pg.SRCALPHA)
-	pathdrawing.fill((0,0,0,0))
+	draw_surface = pg.Surface((x, y), flags=pg.SRCALPHA)
+	draw_surface.fill((0,0,0,0))
 
+	# Start paused.
 	while True:
 		event = pg.event.wait()
-		if pg.key.get_pressed()[pg.K_SPACE]:
-			break
+		if pg.key.get_pressed()[pg.K_SPACE]: break
 
-	path = A_Star(start, end, lower_estimate, window, pathdrawing, big_img)
+	path = A_Star(start, end, lower_estimate, window, draw_surface, big_background)
+
 	if path is None:
 		print("End was unreachable")
 		return
@@ -74,16 +76,8 @@ def main():
 	pg.quit()
 	return
 
-def make_gameparts(title="Pygame window", window_size=(800,600)):
-	pg.init()
-	pg.display.set_caption(title)
-	# We only need mouse movement if button is held down.
-	pg.event.set_blocked(pg.MOUSEMOTION)
-	window = pg.display.set_mode(window_size)
 
-	return window
-
-def A_Star(start:Point, goal:Point, h:Callable, window, drawing, background) -> Coordinates|None:
+def A_Star(start:Point, goal:Point, h:Callable, window, draw_surface, background) -> Coordinates|None:
 	openSet:set[Point] = {start,}
 
 	cameFrom:dict[Point, Point] = {}
@@ -99,19 +93,24 @@ def A_Star(start:Point, goal:Point, h:Callable, window, drawing, background) -> 
 	snakequeue.append(tuple(reversed(start)))
 
 	while openSet:
-		current = sorted(list(openSet), key=lambda x: fScore[x])[0]
+		current = min(openSet, key=fScore.get)
 		if current == goal:
 			return reconstruct_path(cameFrom, current)
 
+		# /// PYGAME
 		snakequeue.append(tuple(reversed(current)))
 		for i, pix in enumerate(snakequeue):
 			realalpha = (i / (snakesize - 1)) ** (2.2)
-			drawing.set_at(pix, (0, 200, 0, 255 * realalpha))
+			draw_surface.set_at(pix, (0, 200, 0, 255 * realalpha))
 
 		window.blit(background, (0,0))
-		window.blit(pg.transform.scale_by(drawing, SCALE), (0,0))
+		window.blit(pg.transform.scale_by(draw_surface, SCALE), (0,0))
 		pg.display.update()
-		pg.time.delay(5)
+		pg.event.clear()
+		pg.time.delay(3)
+
+		if pg.key.get_pressed()[pg.K_ESCAPE]: return
+		# /// END PYGAME
 
 		openSet.remove(current)
 		for neighbor in walkable_from(current):
@@ -127,6 +126,32 @@ def A_Star(start:Point, goal:Point, h:Callable, window, drawing, background) -> 
 
 	return None
 
+
+def walkable_from(pos:Point) -> Coordinates:
+	y, x = neighbors(pos)
+	slope_mask = heightmap[(y,x)] - heightmap[pos] <= 1
+	walkable = (y[slope_mask], x[slope_mask])
+	return transpose(walkable)
+
+
+def neighbors(pos:Point) -> Indices:
+	ymax, xmax = heightmap.shape
+	edge_mask = np.array([
+		pos[0] != 0,
+		pos[0] != ymax - 1,
+		pos[1] != 0,
+		pos[1] != xmax - 1
+		], dtype=bool
+	).squeeze()
+
+	# up, down, left, right
+	ydir = np.array([-1,1,0,0])
+	xdir = np.array([0,0,-1,1])
+
+	available_slots = (pos[0] + ydir[edge_mask], pos[1] + xdir[edge_mask])
+	return available_slots
+
+
 def reconstruct_path(cameFrom:dict[Point, Point], current:Point) -> Coordinates:
 	total_path = [current]
 
@@ -137,42 +162,19 @@ def reconstruct_path(cameFrom:dict[Point, Point], current:Point) -> Coordinates:
 	total_path.reverse()
 	return total_path
 
-def neighbors(pos:Point) -> Indices:
-	# up, down, left, right
-	ydir = np.array([-1,1,0,0])
-	xdir = np.array([0,0,-1,1])
 
-	ymax, xmax = heightmap.shape
-	edge_mask = np.array([
-		pos[0] != 0,
-		pos[0] != ymax - 1,
-		pos[1] != 0,
-		pos[1] != xmax - 1
-		], dtype=bool
-	).squeeze()
+def make_gameparts(title="Pygame window", window_size=(800,600)):
+	pg.init()
+	pg.display.set_caption(title)
+	window = pg.display.set_mode(window_size)
 
-	available_slots = (pos[0] + ydir[edge_mask], pos[1] + xdir[edge_mask])
-	return available_slots
+	# We only need mouse movement if button is held down.
+	pg.event.set_blocked(pg.MOUSEMOTION)
+	# Clear any events queued by the setup.
+	pg.event.clear()
 
-def walkable_from(pos:Point) -> Coordinates:
-	y, x = neighbors(pos)
-	slope_mask = heightmap[(y,x)] - heightmap[pos] <= 1
-	walkable = (y[slope_mask], x[slope_mask])
-	return transpose(walkable)
+	return window
 
-def draw_path(path:Coordinates) -> None:
-	pic = ((heightmap - ord("a")) / 25) ** (1 / 2.2) * 255
-	greypic = pic.astype(np.uint8)
-	colorpic = np.tile(greypic[:,:,np.newaxis], [1,1,3])
-
-	pathmask = np.zeros_like(heightmap, dtype=bool)
-	pathmask[transpose(path)] = True
-	colorpic[pathmask] = [80, 180, 80]
-
-	# Scaling
-	a = np.repeat(colorpic, 10, axis=1)
-	b = np.repeat(a, 10, axis=0)
-	Image.fromarray(b, mode="RGB").show()
 
 if __name__ == "__main__":
 	print()
