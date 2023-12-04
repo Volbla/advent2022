@@ -2,6 +2,7 @@ import re
 from operator import itemgetter
 from numba import njit, jit
 from numba.typed import List
+from time import perf_counter as p
 
 with open("15.txt", "r", newline="\n") as f:
 	inptext = f.read().splitlines()
@@ -73,8 +74,6 @@ def part2_loop(row, sensors, radii):
 	return -1
 
 def main():
-	from time import perf_counter as p
-
 	s = p()
 	for i in range(4_000_001):
 		if i % 100_000 == 0:

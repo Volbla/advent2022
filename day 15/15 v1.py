@@ -1,12 +1,13 @@
 import re
 from operator import itemgetter
 import numpy as np
+from time import perf_counter as p
 
 with open("15.txt", "r", newline="\n") as f:
 	inptext = f.read().splitlines()
 
 def coordmatch(prefix:str) -> list:
-	pattern = re.compile(f"{prefix} ?x=(-?\d+), y=(-?\d+)")
+	pattern = re.compile(fr"{prefix} ?x=(-?\d+), y=(-?\d+)")
 	return [tuple(map(int, pattern.search(line).groups())) for line in inptext]
 
 sensors = coordmatch("Sensor at")
@@ -22,7 +23,7 @@ def main():
 	part1()
 
 	# 2
-	x, y = part2()
+	x, y = part2(50_000) or (0,0)
 	print(x * 4_000_000 + y)
 
 	# 2.2
@@ -125,7 +126,6 @@ def part2vec(batch_size, iteration):
 	return None
 
 def curiosity():
-	from time import perf_counter as p
 	start = p()
 
 	# This is how i originally built the list of sensor coverage.

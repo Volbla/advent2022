@@ -1,5 +1,7 @@
 from operator import add, sub, mul, floordiv
 from itertools import pairwise
+import re
+from numpy import unique
 
 with open("21.txt", "r", newline="\n") as f:
 	inptext = f.read().splitlines()
@@ -39,8 +41,6 @@ def main():
 	# Checking how often each monkey appears.
 	# Besides "root" they all appear twice,
 	# so they're referenced only once.
-	import re
-	from numpy import unique
 	monks = re.findall(r"[a-z]{4}", " ".join(inptext))
 	w, c = unique(monks, return_counts=True)
 	n, c2 = unique(c, return_counts=True)

@@ -4,29 +4,30 @@ from PIL import Image
 import pygame as pg
 
 # ///// TYPING SHIT /////
-if True:
-	from typing import Callable, Sequence, overload, Any
-	from nptyping import NDArray, Int, Bool
 
-	# Subsequences contain parallel y- and x-coordinates.
-	# Compatible with numpy simultaneous indexing.
-	onecoord = tuple[int,...] | NDArray[Any, Int]
-	Indices = tuple[onecoord, onecoord]
+from typing import Callable, Sequence, overload, Any
+from nptyping import NDArray, Int, Bool
 
-	# Compatible with regular iteration over individual coordinates.
-	Point = tuple[int, int]
-	Coordinates = Sequence[Point]
+# Subsequences contain parallel y- and x-coordinates.
+# Compatible with numpy simultaneous indexing.
+onecoord = tuple[int,...] | NDArray[Any, Int]
+Indices = tuple[onecoord, onecoord]
 
-	BoolMask = NDArray[Any, Bool]
+# Compatible with regular iteration over individual coordinates.
+Point = tuple[int, int]
+Coordinates = Sequence[Point]
 
-	@overload
-	def transpose(tuptup:Indices) -> Coordinates: ...
-	@overload
-	def transpose(tuptup:Coordinates) -> Indices: ...
+BoolMask = NDArray[Any, Bool]
 
-def transpose(tuptup):
+
+@overload
+def transpose(tuptup: Indices) -> Coordinates: ...
+@overload
+def transpose(tuptup: Coordinates) -> Indices: ...
+def transpose(tuptup: Indices|Coordinates) -> Indices|Coordinates:
 	# Transforms between the two coordinate types.
 	return tuple(zip(*tuptup))
+
 
 with open("12.txt", "r", newline="\n", encoding="ascii") as f:
 	heightmap = np.array([[ord(c) for c in s] for s in f.read().splitlines()])
@@ -35,10 +36,12 @@ end:Point = transpose(np.nonzero(heightmap == ord("E")))[0]
 heightmap[start] = ord("a")
 heightmap[end] = ord("z")
 
+
 def main():
 	"fuckit"
 	print(start, end)
 	return
+
 
 def A_Star(start:Point, goal:Point, h:Callable) -> Coordinates|None:
 	openSet:set[Point] = {start,}
@@ -72,6 +75,7 @@ def A_Star(start:Point, goal:Point, h:Callable) -> Coordinates|None:
 	# Open set is empty but goal was never reached
 	return None
 
+
 def reconstruct_path(cameFrom:dict[Point, Point], current:Point) -> Coordinates:
 	total_path = [current]
 
@@ -81,6 +85,7 @@ def reconstruct_path(cameFrom:dict[Point, Point], current:Point) -> Coordinates:
 
 	total_path.reverse()
 	return total_path
+
 
 def neighbors(pos:Point) -> Indices:
 	# up, down, left, right
@@ -99,11 +104,13 @@ def neighbors(pos:Point) -> Indices:
 	available_slots = (pos[0] + ydir[edge_mask], pos[1] + xdir[edge_mask])
 	return available_slots
 
+
 def walkable_from(pos:Point) -> Coordinates:
 	y, x = neighbors(pos)
 	slope_mask = heightmap[(y,x)] - heightmap[pos] <= 1
 	walkable = (y[slope_mask], x[slope_mask])
 	return transpose(walkable)
+
 
 def stepupable(area:Coordinates) -> Coordinates:
 	old_height = heightmap[area[0]]
@@ -120,6 +127,7 @@ def stepupable(area:Coordinates) -> Coordinates:
 
 	return transpose(able)
 
+
 def draw_path(path:Coordinates) -> None:
 	pic = ((heightmap - ord("a")) / 25) ** (1 / 2.2) * 255
 	greypic = pic.astype(np.uint8)
@@ -134,10 +142,12 @@ def draw_path(path:Coordinates) -> None:
 	b = np.repeat(a, 10, axis=0)
 	Image.fromarray(b, mode="RGB").show()
 
+
 def sign(n:float) -> int:
 	if n > 0: return 1
 	elif n < 0: return -1
 	else: return 0
+
 
 if __name__ == "__main__":
 	print()

@@ -19,13 +19,13 @@ Coordinates = Sequence[Point]
 BoolMask = NDArray[Any, Bool]
 
 @overload
-def transpose(tuptup:Indices) -> Coordinates: ...
+def transpose(tuptup: Indices) -> Coordinates: ...
 @overload
-def transpose(tuptup:Coordinates) -> Indices: ...
+def transpose(tuptup: Coordinates) -> Indices: ...
 
 # ///// END TYPING SHIT /////
 
-def transpose(tuptup):
+def transpose(tuptup: Indices|Coordinates) -> Indices|Coordinates:
 	# Transforms between the two coordinate types.
 	return tuple(zip(*tuptup))
 
