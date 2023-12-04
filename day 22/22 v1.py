@@ -2,6 +2,7 @@ import re
 import numpy as np
 from numpy import array
 from itertools import cycle
+from folder.gaming.PixelPainter import GameWindow
 
 from typing import Sequence
 from nptyping import NDArray, Bool, Shape
@@ -100,7 +101,6 @@ def traverse_flat_map(board, instructions):
 def painter(board, transpose_board, rows, position):
 	# Simple visualization
 
-	from volbla.gaming.PixelPainter import GameWindow
 	window = GameWindow("day 22", (len(transpose_board), len(board)), 5)
 
 	for y, row in enumerate(rows):
@@ -114,7 +114,7 @@ def painter(board, transpose_board, rows, position):
 		tuple(zip(*np.nonzero(block_array))),
 		(0,0,0))
 
-	window.add_sprite((1,1), (255,100,100), tuple(position))
+	window.add_sprite((1,1), tuple(position), (255,100,100))
 	# window.stand_by(10)
 	# window.frame_stepping()
 
